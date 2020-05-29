@@ -53,20 +53,25 @@ public class BukuAdapter extends RecyclerView.Adapter<BukuAdapter.BukuViewHolder
         holder.idBuku = tempBuku.getIdBuku();
         holder.tvJudul.setText(tempBuku.getJudul());
         holder.gambar = tempBuku.getGambar();
+        holder.tanggal = String.valueOf(tempBuku.getTanggal());
+        holder.penulis = tempBuku.getPenulis();
         holder.tvPenulis.setText(tempBuku.getPenulis());
         holder.sinopsis_buku = tempBuku.getSinopsis_buku();
         holder.link = tempBuku.getLink();
-        int id = context.getResources().getIdentifier(holder.gambar, "drawable", context.getPackageName());
-        holder.imgBuku.setImageResource(id);
-//        try {
-//            File file = new File(holder.gambar);
-//            Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-//            holder.imgBuku.setImageBitmap(bitmap);
-//            holder.imgBuku.setContentDescription(holder.gambar);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//            Toast.makeText(context,"Gagal mengambil gambar dari media penyimpanan", Toast.LENGTH_SHORT).show();
-//        }
+        if (holder.gambar.contains("/")) {
+            try {
+                File file = new File(holder.gambar);
+                Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                holder.imgBuku.setImageBitmap(bitmap);
+                holder.imgBuku.setContentDescription(holder.gambar);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(context, "Gagal mengambil gambar dari media penyimpanan", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            int id = context.getResources().getIdentifier(holder.gambar, "drawable", context.getPackageName());
+            holder.imgBuku.setImageResource(id);
+        }
 
     }
 
@@ -118,6 +123,7 @@ public class BukuAdapter extends RecyclerView.Adapter<BukuAdapter.BukuViewHolder
             bukaInput.putExtra("GAMBAR", gambar);
             bukaInput.putExtra("SINOPSIS_BUKU", sinopsis_buku);
             bukaInput.putExtra("LINK", link);
+            bukaInput.putExtra("OPERASI", "edit");
             context.startActivity(bukaInput);
             return true;
         }

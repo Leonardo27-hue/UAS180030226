@@ -41,18 +41,20 @@ public class TampilActivity extends AppCompatActivity {
         tvPenulis.setText(terimaData.getStringExtra("PENULIS"));
         tvTanggal.setText(terimaData.getStringExtra("TANGGAL"));
         tvSinopsis_buku.setText(terimaData.getStringExtra("SINOPSIS_BUKU"));
-        int id = getApplicationContext().getResources().getIdentifier(imgLocation, "drawable", getApplicationContext().getPackageName());
-        imgBuku.setImageResource(id);
-
-//        try {
-//            File file = new File(imgLocation);
-//            Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-//            imgBuku.setImageBitmap(bitmap);
-//            imgBuku.setContentDescription(imgLocation);
-//        } catch (FileNotFoundException er) {
-//            er.printStackTrace();
-//            Toast.makeText(this, "Gagal mengambil gambar dari media penyimpanan", Toast.LENGTH_SHORT).show();
-//        }
+        if (imgLocation.contains("/")) {
+            try {
+                File file = new File(imgLocation);
+                Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                imgBuku.setImageBitmap(bitmap);
+                imgBuku.setContentDescription(imgLocation);
+            } catch (FileNotFoundException er) {
+                er.printStackTrace();
+                Toast.makeText(this, "Gagal mengambil gambar dari media penyimpanan", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            int id = getApplicationContext().getResources().getIdentifier(imgLocation, "drawable", getApplicationContext().getPackageName());
+            imgBuku.setImageResource(id);
+        }
 
         linkBuku = terimaData.getStringExtra("LINK");
     }

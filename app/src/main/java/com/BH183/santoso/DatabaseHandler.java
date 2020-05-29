@@ -31,7 +31,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
     private Context context;
 
-    public DatabaseHandler (Context ctx){
+    public DatabaseHandler(Context ctx) {
         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = ctx;
     }
@@ -58,7 +58,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void tambahBuku(Buku dataBuku){
+    public void insertBuku(Buku dataBuku) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -72,7 +72,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void tambahBuku(Buku dataBuku, SQLiteDatabase db){
+    public void tambahBuku(Buku dataBuku, SQLiteDatabase db) {
         ContentValues cv = new ContentValues();
 
         cv.put(KEY_JUDUL, dataBuku.getJudul());
@@ -91,7 +91,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cv.put(KEY_JUDUL, dataBuku.getJudul());
         cv.put(KEY_PENULIS, dataBuku.getPenulis());
         cv.put(KEY_TGL, sdFormat.format(dataBuku.getTanggal()));
-        cv.put(KEY_GAMBAR, dataBuku.getGambar());
+        if (!dataBuku.getGambar().equalsIgnoreCase("Ilustrasi Gambar")) {
+            cv.put(KEY_GAMBAR, dataBuku.getGambar());
+        }
         cv.put(KEY_SINOPSIS_BUKU, dataBuku.getSinopsis_buku());
         cv.put(KEY_LINK, dataBuku.getLink());
 
@@ -99,23 +101,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void hapusBuku(int idBuku){
+    public void hapusBuku(int idBuku) {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(TABLE_BUKU, KEY_ID_BUKU + "=?", new String[]{String.valueOf(idBuku)});
         db.close();
     }
 
-    public ArrayList<Buku> getAllBuku(){
+    public ArrayList<Buku> getAllBuku() {
         ArrayList<Buku> dataBuku = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_BUKU;
         SQLiteDatabase db = getReadableDatabase();
         Cursor csr = db.rawQuery(query, null);
-        if (csr.moveToFirst()){
+        if (csr.moveToFirst()) {
             do {
                 Date tempDate = new Date();
                 try {
                     tempDate = sdFormat.parse(csr.getString(2));
-                } catch (ParseException er){
+                } catch (ParseException er) {
                     er.printStackTrace();
                 }
 
@@ -173,7 +175,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         try {
             tempDate = sdFormat.parse("2014");
-        } catch (ParseException er){
+        } catch (ParseException er) {
             er.printStackTrace();
         }
 
@@ -192,7 +194,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         try {
             tempDate = sdFormat.parse("2018");
-        } catch (ParseException er){
+        } catch (ParseException er) {
             er.printStackTrace();
         }
 
@@ -211,7 +213,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         try {
             tempDate = sdFormat.parse("2010");
-        } catch (ParseException er){
+        } catch (ParseException er) {
             er.printStackTrace();
         }
 

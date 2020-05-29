@@ -43,7 +43,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     private EditText editJudul, editPenulis, editTanggal, editSinopsis_buku, editLink;
     private ImageView ivBuku;
     private DatabaseHandler dbHandler;
-    private SimpleDateFormat sdFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+    private SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy");
     private boolean updateData = false;
     private int idBuku = 0;
     private Button btnSimpan, btnPilihTanggal;
@@ -66,7 +66,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         dbHandler = new DatabaseHandler(this);
         Intent terimaIntent = getIntent();
         Bundle data = terimaIntent.getExtras();
-        if (data.getString("OPERASI").equals("insert")){
+        if (data.getString("OPERASI").equals("insert")) {
             updateData = false;
         } else {
             updateData = true;
@@ -76,7 +76,12 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
             editTanggal.setText(data.getString("TANGGAL"));
             editSinopsis_buku.setText(data.getString("SINOPSIS_BUKU"));
             editLink.setText(data.getString("LINK"));
-            loadImageFromInternalStorage(data.getString("GAMBAR"));
+            if (data.getString("GAMBAR").contains("/")) {
+                loadImageFromInternalStorage(data.getString("GAMBAR"));
+            } else {
+                int id = getApplicationContext().getResources().getIdentifier(data.getString("GAMBAR"), "drawable", getApplicationContext().getPackageName());
+                ivBuku.setImageResource(id);
+            }
         }
 
         ivBuku.setOnClickListener((View.OnClickListener) this);
@@ -118,14 +123,14 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         ContextWrapper ctxWrapper = new ContextWrapper(ctx);
         File file = ctxWrapper.getDir("images", MODE_PRIVATE);
         String uniqueID = UUID.randomUUID().toString();
-        file = new File(file, "berita-" +  uniqueID + ".jpg");
-        try{
+        file = new File(file, "buku-" + uniqueID + ".jpg");
+        try {
             OutputStream stream = null;
             stream = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             stream.flush();
             stream.close();
-        } catch (IOException er){
+        } catch (IOException er) {
             er.printStackTrace();
         }
 
@@ -133,15 +138,15 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         return savedImage.toString();
     }
 
-    private void loadImageFromInternalStorage(String imageLocation){
+    private void loadImageFromInternalStorage(String imageLocation) {
         try {
             File file = new File(imageLocation);
             Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
             ivBuku.setImageBitmap(bitmap);
             ivBuku.setContentDescription(imageLocation);
-        } catch (FileNotFoundException er){
+        } catch (FileNotFoundException er) {
             er.printStackTrace();
-            Toast.makeText(this,"Gagal mengambil gambar dari media penyimpanan", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Gagal mengambil gambar dari media penyimpanan", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -150,7 +155,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
 
         MenuItem item = menu.findItem(R.id.item__menu_hapus);
 
-        if (updateData==true) {
+        if (updateData == true) {
             item.setEnabled(true);
             item.getIcon().setAlpha(255);
         } else {
@@ -188,7 +193,6 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         gambar = ivBuku.getContentDescription().toString();
         sinopsis_buku = editSinopsis_buku.getText().toString();
         link = editLink.getText().toString();
-
         try {
             tanggal = sdFormat.parse(editTanggal.getText().toString());
         } catch (ParseException er) {
@@ -201,17 +205,17 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
 
         if (updateData == true) {
             dbHandler.editBuku(tempBuku);
-            Toast.makeText(this, "Data berita diperbaharui", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Data buku diperbaharui", Toast.LENGTH_SHORT).show();
         } else {
-            dbHandler.editBuku(tempBuku);
-            Toast.makeText(this, "Data berita ditambahkan", Toast.LENGTH_SHORT).show();
+            dbHandler.insertBuku(tempBuku);
+            Toast.makeText(this, "Data buku ditambahkan", Toast.LENGTH_SHORT).show();
         }
         finish();
     }
 
     private void hapusData() {
         dbHandler.hapusBuku(idBuku);
-        Toast.makeText(this, "Data berita dihapus", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Data buku dihapus", Toast.LENGTH_SHORT).show();
     }
 
     private void pilihTanggal() {
@@ -247,11 +251,11 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         int idView = v.getId();
 
-        if (idView == R.id.btn_simpan){
+        if (idView == R.id.btn_simpan) {
             simpanData();
-        } else if(idView == R.id.iv_buku){
+        } else if (idView == R.id.iv_buku) {
             pickImage();
-        } else if (idView == R.id.btn_pilih_tanggal){
+        } else if (idView == R.id.btn_pilih_tanggal) {
             pilihTanggal();
         }
     }
